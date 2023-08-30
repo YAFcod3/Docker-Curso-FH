@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+  labels:
+    app: postgres
+  #? definicion del pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15.1
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5432
+        env:
+         - name: POSTGRES_PASSWORD   #le asigno name
+           valueFrom:
+              secretKeyRef:
+                name: postgres-secrets  #metadata->name del secret
+                key:  DB_PASSWORD       #key
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+spec:
+  selector:
+    app: postgres
+  ports:
+  - protocol: TCP
+    port: 5432    #!cualquier puerto
+    targetPort: 5432   #! puerto del deployment
+
+
+
+#! kubectl apply -f postgres-config.yml
+#! kubectl apply -f postgres-secrets.yml
+#! kubectl apply -f postgres.yml
+
+#kubectl get all
+#describe logs etc

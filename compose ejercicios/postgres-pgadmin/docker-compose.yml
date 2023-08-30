@@ -1,0 +1,28 @@
+version: "3" #version del docker compose (ahora 3)
+
+services:
+  db:
+    container_name: postgres_database
+    image: postgres
+    volumes:
+      # - postgres-db:/var/lib/postgresql/data
+      - ./postgres:/var/lib/postgresql/data #bind
+
+    environment:
+      - POSTGRES_PASSWORD=123456
+
+  pgAdmin:
+    depends_on:
+      - db
+    image: dpage/pgadmin4 #la imagen a bajar o usar
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin #bind # usar : sudo chown -R 5050:5050 pgadmin
+    ports:
+      - "8080:80"
+    environment:
+      - PGADMIN_DEFAULT_PASSWORD=123456
+      - PGADMIN_DEFAULT_EMAIL=superman@google.com
+# volumes:
+#   postgres-db:
+#     external: true
+
